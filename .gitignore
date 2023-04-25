@@ -44,4 +44,6 @@ qrenderdoc/generated/
 qrenderdoc/3rdparty/pyside
 .DS_Store
 plugins-*/
+cmake-build-debug/
+.idea/
 __pycache__
