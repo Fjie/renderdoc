@@ -3,7 +3,7 @@ name: Trigger Webhook on Push
 on:
   push:
     branches:
-      - test  # 监听主分支上的 push 事件
+      - test  # 监听 test 分支上的 push 事件
 
 jobs:
   trigger-webhook:
@@ -16,7 +16,7 @@ jobs:
         -d '{
               "msgtype": "text",
               "text": {
-                "content": "仓库 ${GITHUB_REPOSITORY} 收到新的推送：\n推送者: ${GITHUB_ACTOR}\n提交信息: ${GITHUB_SHA}"
+                "content": "仓库 ${{ github.repository }} 收到新的推送：\n推送者: ${{ github.actor }}\n提交信息: ${{ github.sha }}"
               }
             }' \
         https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c07e7ef1-5062-4af6-bc00-d0ec7710b54d
