@@ -1,4 +1,4 @@
-name: Trigger Webhook on Push and PR
+name: Trigger Webhook on Push, PR, and Check Runs
 
 on:
   push:
@@ -7,6 +7,10 @@ on:
   pull_request:
     branches:
       - '**'
+  workflow_run:
+    workflows: ["Trigger Webhook on Push and PR"]
+    types:
+      - completed
 
 jobs:
   trigger-webhook:
@@ -33,6 +37,18 @@ jobs:
               "msgtype": "text",
               "text": {
                 "content": "仓库 ${{ github.repository }} 收到新的拉取请求：\n请求者: ${{ github.actor }}\nPR 标题: ${{ github.event.pull_request.title }}\nPR 链接: ${{ github.event.pull_request.html_url }}"
+              }
+            }' \
+        https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
+
+    - name: Send Webhook on Check Run
+      if: github.event_name == 'workflow_run'
+      run: |
+        curl -X POST -H "Content-Type: application/json" \
+        -d '{
+              "msgtype": "text",
+              "text": {
+                "content": "仓库 ${{ github.repository }} 的工作流运行已完成：\n状态: ${{ github.event.workflow_run.conclusion }}\n详情: ${{ github.event.workflow_run.html_url }}"
               }
             }' \
         https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
