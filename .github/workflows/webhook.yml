@@ -41,14 +41,26 @@ jobs:
             }' \
         https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
 
-    - name: Send Webhook on Check Run
-      if: github.event_name == 'workflow_run'
+    - name: Send Webhook on Check Run Success
+      if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
       run: |
         curl -X POST -H "Content-Type: application/json" \
         -d '{
               "msgtype": "text",
               "text": {
-                "content": "仓库 ${{ github.repository }} 的工作流运行已完成：\n状态: ${{ github.event.workflow_run.conclusion }}\n详情: ${{ github.event.workflow_run.html_url }}"
+                "content": "仓库 ${{ github.repository }} 的工作流运行已成功完成：\n状态: ${{ github.event.workflow_run.conclusion }}\n详情: ${{ github.event.workflow_run.html_url }}"
+              }
+            }' \
+        https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
+
+    - name: Send Webhook on Check Run Failure
+      if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+      run: |
+        curl -X POST -H "Content-Type: application/json" \
+        -d '{
+              "msgtype": "text",
+              "text": {
+                "content": "仓库 ${{ github.repository }} 的工作流运行失败：\n状态: ${{ github.event.workflow_run.conclusion }}\n详情: ${{ github.event.workflow_run.html_url }}"
               }
             }' \
         https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
