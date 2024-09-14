@@ -19,4 +19,4 @@ jobs:
                 "content": "仓库 ${{ github.repository }} 收到新的推送：\n推送者: ${{ github.actor }}\n提交信息: ${{ github.sha }}\n推送详情: ${{ github.event.head_commit.url }}"
               }
             }' \
-        https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c07e7ef1-5062-4af6-bc00-d0ec7710b54d
+        https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
