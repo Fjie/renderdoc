@@ -21,3 +21,24 @@
 chmod +x mac_build.sh
 ./mac_build.sh
 ```
+
+## 踩坑
+如果遇到这个报错：
+```
+-- Could NOT find LLVM (missing: LLVM_DIR)
+CMake Error at renderdoc/CMakeLists.txt:531 (message):
+  LLVM not found - interceptor-lib requires LLVM 4.0 available.
+```
+
+可以删除renderdoc根目录下的build和build-android-arm32目录
+
+也可以重新手动构建一下Android：
+
+```bash
+cd ~/CLionProjects/renderdoc
+rm -rf build-android-arm32
+mkdir build-android-arm32
+cd build-android-arm32
+cmake -DLLVM_DIR=/opt/homebrew/opt/llvm/lib/cmake/llvm ..
+cd ..
+```
