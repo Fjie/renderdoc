@@ -1,6 +1,9 @@
 name: Trigger Webhook on Check Suite Completion and PR Events
 
 on:
+  push:  # 监听所有分支的 push 事件
+    branches:
+      - '**'
   check_suite:
     types:
       - completed  # 监听检查完成的事件
