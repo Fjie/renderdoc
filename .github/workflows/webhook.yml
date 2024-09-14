@@ -1,15 +1,30 @@
-name: Trigger Webhook on Check Suite Completion
+name: Trigger Webhook on Check Suite Completion and PR Events
 
 on:
   check_suite:
     types:
       - completed  # 监听检查完成的事件
+  pull_request:
+    types:
+      - opened  # 监听 PR 发起的事件
 
 jobs:
   trigger-webhook:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Send Webhook on PR Opened
+      if: github.event_name == 'pull_request' && github.event.action == 'opened'
+      run: |
+        curl -X POST -H "Content-Type: application/json" \
+        -d '{
+              "msgtype": "text",
+              "text": {
+                "content": "仓库 ${{ github.repository }} 有新的 PR：\n发起者: ${{ github.actor }}\nPR 标题: ${{ github.event.pull_request.title }}\nPR 链接: ${{ github.event.pull_request.html_url }}"
+              }
+            }' \
+        https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
+
     - name: Send Webhook on Check Suite Success for PR
       if: github.event.check_suite.conclusion == 'success' && github.event.check_suite.pull_requests != ''
       run: |
