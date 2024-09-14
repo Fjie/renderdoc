@@ -1,0 +1,22 @@
+name: Trigger Webhook on Push
+
+on:
+  push:
+    branches:
+      - test  # 监听主分支上的 push 事件
+
+jobs:
+  trigger-webhook:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Send Webhook
+      run: |
+        curl -X POST -H "Content-Type: application/json" \
+        -d '{
+              "msgtype": "text",
+              "text": {
+                "content": "仓库 ${GITHUB_REPOSITORY} 收到新的推送：\n推送者: ${GITHUB_ACTOR}\n提交信息: ${GITHUB_SHA}"
+              }
+            }' \
+        https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c07e7ef1-5062-4af6-bc00-d0ec7710b54d
