@@ -21,3 +21,15 @@ jobs:
               }
             }' \
         https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
+
+    - name: Send Webhook on Check Suite Failure for PR
+      if: github.event.check_suite.conclusion == 'failure' && github.event.check_suite.pull_requests != ''
+      run: |
+        curl -X POST -H "Content-Type: application/json" \
+        -d '{
+              "msgtype": "text",
+              "text": {
+                "content": "仓库 ${{ github.repository }} 的 PR 检查失败：\n检查者: ${{ github.actor }}\nPR 链接: ${{ github.event.check_suite.pull_requests[0].html_url }}\n检查详情: ${{ github.event.check_suite.url }}"
+              }
+            }' \
+        https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
