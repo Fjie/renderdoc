@@ -1,16 +1,15 @@
-name: Trigger Webhook on Push, PR, and Check Runs
+name: Trigger Webhook on Push, PR, and PR Merge
 
 on:
   push:
     branches:
       - '**'
   pull_request:
-    branches:
-      - '**'
-  workflow_run:
-    workflows: ["CI"]
     types:
-      - completed
+      - opened
+      - synchronize
+      - closed
+      - ready_for_review
 
 jobs:
   trigger-webhook:
@@ -30,7 +29,7 @@ jobs:
         https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
 
     - name: Send Webhook on PR
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && github.event.action == 'opened'
       run: |
         curl -X POST -H "Content-Type: application/json" \
         -d '{
@@ -41,26 +40,26 @@ jobs:
             }' \
         https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
 
-    - name: Send Webhook on Check Run Success
-      if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    - name: Send Webhook on PR Merge
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
       run: |
         curl -X POST -H "Content-Type: application/json" \
         -d '{
               "msgtype": "text",
               "text": {
-                "content": "仓库 ${{ github.repository }} 的工作流运行已成功完成：\n状态: ${{ github.event.workflow_run.conclusion }}\n详情: ${{ github.event.workflow_run.html_url }}"
+                "content": "仓库 ${{ github.repository }} 的拉取请求已合并：\n请求者: ${{ github.actor }}\nPR 标题: ${{ github.event.pull_request.title }}\nPR 链接: ${{ github.event.pull_request.html_url }}"
               }
             }' \
         https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
 
-    - name: Send Webhook on Check Run Failure
-      if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+    - name: Send Webhook on PR Ready for Merge
+      if: github.event_name == 'pull_request' && (github.event.action == 'synchronize' || github.event.action == 'ready_for_review')
       run: |
         curl -X POST -H "Content-Type: application/json" \
         -d '{
               "msgtype": "text",
               "text": {
-                "content": "仓库 ${{ github.repository }} 的工作流运行失败：\n状态: ${{ github.event.workflow_run.conclusion }}\n详情: ${{ github.event.workflow_run.html_url }}"
+                "content": "仓库 ${{ github.repository }} 的拉取请求已更新，可以合并：\n请求者: ${{ github.actor }}\nPR 标题: ${{ github.event.pull_request.title }}\nPR 链接: ${{ github.event.pull_request.html_url }}"
               }
             }' \
         https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_WEBHOOK_KEY }}
