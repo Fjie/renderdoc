@@ -4,7 +4,7 @@
 [![CI](https://github.com/baldurk/renderdoc/workflows/CI/badge.svg?branch=actions-test&event=push)](https://github.com/baldurk/renderdoc/actions)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](docs/CODE_OF_CONDUCT.md) 
 
-// 测试push通知 2
+// 测试push通知 2 3
 
 RenderDoc is a frame-capture based graphics debugger, currently available for Vulkan, D3D11, D3D12, OpenGL, and OpenGL ES development on Windows, Linux, Android, and Nintendo Switch&trade;. It is completely open-source under the MIT license.
 
